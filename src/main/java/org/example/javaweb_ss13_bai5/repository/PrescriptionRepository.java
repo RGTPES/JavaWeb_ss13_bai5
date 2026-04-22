@@ -19,11 +19,22 @@ public class PrescriptionRepository {
 
     public List<Prescription> findAll() {
         Session session = sessionFactory.openSession();
+        Transaction tx = null;
         try {
-            return session.createQuery(
+            tx = session.beginTransaction();
+
+            List<Prescription> prescriptions = session.createQuery(
                     "select distinct p from Prescription p left join fetch p.details order by p.id desc",
                     Prescription.class
             ).getResultList();
+
+            tx.commit();
+            return prescriptions;
+        } catch (Exception e) {
+            if (tx != null) {
+                tx.rollback();
+            }
+            throw e;
         } finally {
             session.close();
         }
@@ -31,12 +42,25 @@ public class PrescriptionRepository {
 
     public List<Prescription> findByPatientCode(String patientCode) {
         Session session = sessionFactory.openSession();
+        Transaction tx = null;
         try {
-            return session.createQuery(
-                            "select distinct p from Prescription p left join fetch p.details where p.patientCode like :patientCode order by p.id desc",
+            tx = session.beginTransaction();
+
+            List<Prescription> prescriptions = session.createQuery(
+                            "select distinct p from Prescription p left join fetch p.details " +
+                                    "where p.patientCode like :patientCode order by p.id desc",
                             Prescription.class
-                    ).setParameter("patientCode", "%" + patientCode + "%")
+                    )
+                    .setParameter("patientCode", "%" + patientCode + "%")
                     .getResultList();
+
+            tx.commit();
+            return prescriptions;
+        } catch (Exception e) {
+            if (tx != null) {
+                tx.rollback();
+            }
+            throw e;
         } finally {
             session.close();
         }
@@ -44,13 +68,18 @@ public class PrescriptionRepository {
 
     public Prescription save(Prescription prescription) {
         Session session = sessionFactory.openSession();
-        Transaction tx = session.beginTransaction();
+        Transaction tx = null;
         try {
+            tx = session.beginTransaction();
+
             session.persist(prescription);
+
             tx.commit();
             return prescription;
         } catch (Exception e) {
-            tx.rollback();
+            if (tx != null) {
+                tx.rollback();
+            }
             throw e;
         } finally {
             session.close();

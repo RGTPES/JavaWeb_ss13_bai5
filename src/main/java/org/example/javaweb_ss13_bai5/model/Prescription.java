@@ -10,6 +10,7 @@ public class Prescription {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "patient_code", nullable = false, length = 50)
@@ -48,28 +49,28 @@ public class Prescription {
         return id;
     }
 
-    public String getPatientCode() {
-        return patientCode;
-    }
-
-    public String getPatientName() {
-        return patientName;
-    }
-
-    public List<PrescriptionDetail> getDetails() {
-        return details;
-    }
-
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getPatientCode() {
+        return patientCode;
     }
 
     public void setPatientCode(String patientCode) {
         this.patientCode = patientCode;
     }
 
+    public String getPatientName() {
+        return patientName;
+    }
+
     public void setPatientName(String patientName) {
         this.patientName = patientName;
+    }
+
+    public List<PrescriptionDetail> getDetails() {
+        return details;
     }
 
     public void setDetails(List<PrescriptionDetail> details) {

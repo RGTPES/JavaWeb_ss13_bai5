@@ -1,39 +1,50 @@
 package org.example.javaweb_ss13_bai5.config;
 
+import javax.sql.DataSource;
+
 import org.example.javaweb_ss13_bai5.model.Prescription;
 import org.example.javaweb_ss13_bai5.model.PrescriptionDetail;
 import org.hibernate.SessionFactory;
+import org.hibernate.boot.MetadataSources;
+import org.hibernate.boot.registry.StandardServiceRegistry;
+import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
+import org.hibernate.cfg.Environment;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.orm.jpa.hibernate.HibernateTransactionManager;
-import org.springframework.orm.jpa.hibernate.LocalSessionFactoryBean;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import javax.sql.DataSource;
-import java.util.Properties;
+import java.util.HashMap;
+import java.util.Map;
 
 @Configuration
+@EnableTransactionManagement
 public class HibernateConfig {
+
     @Bean
-    public LocalSessionFactoryBean sessionFactory(DataSource dataSource) {
-        LocalSessionFactoryBean sessionFactory = new LocalSessionFactoryBean();
-        sessionFactory.setDataSource(dataSource);
-        sessionFactory.setPackagesToScan("org.example.javaweb_ss13_bai5");
+    public SessionFactory sessionFactory(DataSource dataSource) {
+        Map<String, Object> settings = new HashMap<>();
+        settings.put(Environment.DATASOURCE, dataSource);
+        settings.put(Environment.HBM2DDL_AUTO, "update");
+        settings.put(Environment.SHOW_SQL, true);
+        settings.put(Environment.FORMAT_SQL, true);
+        settings.put(Environment.CURRENT_SESSION_CONTEXT_CLASS, "thread");
+        settings.put(Environment.DIALECT, "org.hibernate.dialect.MySQLDialect");
 
-        Properties properties = new Properties();
-        properties.put("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
-        properties.put("hibernate.show_sql", "true");
-        properties.put("hibernate.format_sql", "true");
-        properties.put("hibernate.hbm2ddl.auto", "update");
-        properties.put("hibernate.current_session_context_class", "thread");
+        StandardServiceRegistry registry = new StandardServiceRegistryBuilder()
+                .applySettings(settings)
+                .build();
 
-        sessionFactory.setHibernateProperties(properties);
-        sessionFactory.setAnnotatedClasses(Prescription.class, PrescriptionDetail.class);
-
-        return sessionFactory;
+        return new MetadataSources(registry)
+                .addAnnotatedClass(Prescription.class)
+                .addAnnotatedClass(PrescriptionDetail.class)
+                .buildMetadata()
+                .buildSessionFactory();
     }
 
     @Bean
-    public HibernateTransactionManager transactionManager(SessionFactory sessionFactory) {
+    public PlatformTransactionManager transactionManager(SessionFactory sessionFactory) {
         return new HibernateTransactionManager(sessionFactory);
     }
 }

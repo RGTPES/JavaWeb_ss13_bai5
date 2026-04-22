@@ -1,4 +1,5 @@
 package org.example.javaweb_ss13_bai5.model;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -7,6 +8,7 @@ public class PrescriptionDetail {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
     private Long id;
 
     @Column(name = "medicine_name", nullable = false, length = 100)
@@ -31,28 +33,28 @@ public class PrescriptionDetail {
         return id;
     }
 
-    public String getMedicineName() {
-        return medicineName;
-    }
-
-    public Integer getQuantity() {
-        return quantity;
-    }
-
-    public Prescription getPrescription() {
-        return prescription;
-    }
-
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getMedicineName() {
+        return medicineName;
     }
 
     public void setMedicineName(String medicineName) {
         this.medicineName = medicineName;
     }
 
+    public Integer getQuantity() {
+        return quantity;
+    }
+
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
+    }
+
+    public Prescription getPrescription() {
+        return prescription;
     }
 
     public void setPrescription(Prescription prescription) {
