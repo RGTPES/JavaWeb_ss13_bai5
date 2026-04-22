@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Thêm đơn thuốc</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; }
+        .menu a { margin-right: 15px; text-decoration: none; }
+        .form-group { margin-bottom: 12px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        table, th, td { border: 1px solid #999; }
+        th, td { padding: 10px; }
+        .error-box { background: #ffe6e6; color: #b30000; padding: 10px; margin-bottom: 15px; }
+    </style>
+</head>
+<body>
+<h1>Thêm đơn thuốc mới</h1>
+
+<div class="menu">
+    <a th:href="@{/prescriptions}">Xem danh sách đơn thuốc</a>
+    <a th:href="@{/prescriptions/create}">Thêm đơn thuốc mới</a>
+</div>
+
+<div class="error-box" th:if="${errors != null}">
+    <ul>
+        <li th:each="e : ${errors}" th:text="${e}"></li>
+    </ul>
+</div>
+
+<form th:action="@{/prescriptions/create}" th:object="${form}" method="post">
+    <div class="form-group">
+        <label>Mã bệnh nhân:</label>
+        <input type="text" th:field="*{patientCode}">
+    </div>
+
+    <div class="form-group">
+        <label>Tên bệnh nhân:</label>
+        <input type="text" th:field="*{patientName}">
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Tên thuốc</th>
+            <th>Số lượng</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="d, stat : *{details}">
+            <td>
+                <input type="text" th:field="*{details[__${stat.index}__].medicineName}">
+            </td>
+            <td>
+                <input type="number" th:field="*{details[__${stat.index}__].quantity}">
+            </td>
+        </tr>
+        </tbody>
+    </table>
+
+    <br>
+    <button type="submit">Lưu đơn thuốc</button>
+</form>
+
+<form th:action="@{/prescriptions/create/add-row}" th:object="${form}" method="post" style="margin-top: 12px;">
+    <input type="hidden" th:field="*{patientCode}">
+    <input type="hidden" th:field="*{patientName}">
+    <div th:each="d, stat : *{details}">
+        <input type="hidden" th:field="*{details[__${stat.index}__].medicineName}">
+        <input type="hidden" th:field="*{details[__${stat.index}__].quantity}">
+    </div>
+    <button type="submit">+ Thêm dòng thuốc</button>
+</form>
+</body>
+</html>

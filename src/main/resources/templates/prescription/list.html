@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="vi" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Danh sách đơn thuốc</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; }
+        .menu a { margin-right: 15px; text-decoration: none; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        table, th, td { border: 1px solid #999; }
+        th, td { padding: 10px; text-align: left; vertical-align: top; }
+        .details { margin: 0; padding-left: 18px; }
+        .search-box { margin-top: 20px; }
+    </style>
+</head>
+<body>
+<h1>Quản lý Đơn thuốc</h1>
+
+<div class="menu">
+    <a th:href="@{/prescriptions}">Xem danh sách đơn thuốc</a>
+    <a th:href="@{/prescriptions/create}">Thêm đơn thuốc mới</a>
+</div>
+
+<form th:action="@{/prescriptions}" method="get" class="search-box">
+    <label>Tìm theo mã bệnh nhân:</label>
+    <input type="text" name="patientCode" th:value="${patientCode}">
+    <button type="submit">Tìm kiếm</button>
+</form>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Mã bệnh nhân</th>
+        <th>Tên bệnh nhân</th>
+        <th>Chi tiết thuốc</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="p : ${prescriptions}">
+        <td th:text="${p.id}"></td>
+        <td th:text="${p.patientCode}"></td>
+        <td th:text="${p.patientName}"></td>
+        <td>
+            <ul class="details">
+                <li th:each="d : ${p.details}">
+                    <span th:text="${d.medicineName}"></span>
+                    -
+                    <span th:text="${d.quantity}"></span>
+                </li>
+            </ul>
+        </td>
+    </tr>
+    <tr th:if="${#lists.isEmpty(prescriptions)}">
+        <td colspan="4">Không có dữ liệu</td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
